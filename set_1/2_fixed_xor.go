@@ -17,20 +17,8 @@ func FixedXor(s1, s2 string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	for i := range b1 {
 		b1[i] ^= b2[i]
 	}
 	return hex.EncodeToString(b1), nil
-	// TODO: handle slices of different lenghts.
-	/*
-		if len(b1) != len(b2) {
-			return
-		output := make([]byte, len(b1))
-		for i := range b1 {
-			if b1[i] != b2[i] {
-			}
-		}
-	*/
-
 }

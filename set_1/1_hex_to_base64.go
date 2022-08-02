@@ -10,6 +10,5 @@ func HexToBase64(input string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	return base64.StdEncoding.EncodeToString(bytes), nil
 }
