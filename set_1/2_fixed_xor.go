@@ -1,14 +1,10 @@
 package set1
 
-import (
-	"encoding/hex"
-)
+import "encoding/hex"
 
 func FixedXor(s1, s2 string) (string, error) {
-	var (
-		b1, b2 []byte
-		err    error
-	)
+	var b1, b2 []byte
+	var err error
 	b1, err = hex.DecodeString(s1)
 	if err != nil {
 		return "", err
