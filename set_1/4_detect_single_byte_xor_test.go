@@ -8,7 +8,7 @@ import (
 )
 
 func TestDetectSingleByteXor(t *testing.T) {
-	path, err := getTestDataPath("1_4.txt")
+	path, err := getTestDataPath("4.txt")
 	if err != nil {
 		t.Fatalf("getTestDataPath: %v", err)
 	}
