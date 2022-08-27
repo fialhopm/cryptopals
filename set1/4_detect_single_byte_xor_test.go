@@ -4,11 +4,12 @@ import (
 	"bufio"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 )
 
 func TestDetectSingleByteXor(t *testing.T) {
-	path, err := getTestDataPath("4.txt")
+	path, err := getTestDataPath("1_4.txt")
 	if err != nil {
 		t.Fatalf("getTestDataPath: %v", err)
 	}
@@ -35,9 +36,7 @@ func TestDetectSingleByteXor(t *testing.T) {
 }
 
 func getTestDataPath(filename string) (string, error) {
-	cur, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-	return filepath.Join(cur, "test_data", filename), nil
+	_, path, _, _ := runtime.Caller(0)
+	root := filepath.Join(filepath.Dir(path), "..")
+	return filepath.Join(root, "testdata", filename), nil
 }
