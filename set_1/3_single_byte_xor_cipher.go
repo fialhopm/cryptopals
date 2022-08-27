@@ -5,8 +5,8 @@ import (
 	"unicode"
 )
 
-func SingleByteXorCipher(cipherHex string) (string, error) {
-	cipherB, err := hex.DecodeString(cipherHex)
+func SingleByteXorCipher(cipher string) (string, error) {
+	bytes, err := hex.DecodeString(cipher)
 	if err != nil {
 		return "", err
 	}
@@ -16,23 +16,23 @@ func SingleByteXorCipher(cipherHex string) (string, error) {
 		plaintext []byte
 	)
 	for key > 0 {
-		b := singleByteXor(cipherB, key)
-		s := freqScore(b)
-		if s > maxScore {
-			maxScore = s
-			plaintext = b
+		candidate := byteXor(bytes, key)
+		score := freqScore(candidate)
+		if score > maxScore {
+			maxScore = score
+			plaintext = candidate
 		}
 		key++
 	}
 	return string(plaintext), nil
 }
 
-func singleByteXor(bytes []byte, key byte) []byte {
-	result := make([]byte, len(bytes))
+func byteXor(bytes []byte, key byte) []byte {
+	enc := make([]byte, len(bytes))
 	for i, b := range bytes {
-		result[i] = b ^ key
+		enc[i] = b ^ key
 	}
-	return result
+	return enc
 }
 
 func freqScore(bytes []byte) float64 {
@@ -46,7 +46,8 @@ func freqScore(bytes []byte) float64 {
 		'p': 1.929, 'q': 0.095, 'r': 5.987,
 		's': 6.327, 't': 9.056, 'u': 2.758,
 		'v': 0.978, 'w': 2.360, 'x': 0.150,
-		'y': 1.974, 'z': 0.074, ' ': 13, // the space is slightly more frequent than the top letter
+		'y': 1.974, 'z': 0.074,
+		' ': 13, // the space is slightly more frequent than the top letter
 	}
 	var score float64
 	for _, r := range string(bytes) {

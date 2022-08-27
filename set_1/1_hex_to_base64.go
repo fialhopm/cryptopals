@@ -5,10 +5,10 @@ import (
 	"encoding/hex"
 )
 
-func HexToBase64(input string) (string, error) {
-	bytes, err := hex.DecodeString(input)
+func HexToBase64(h string) (string, error) {
+	b, err := hex.DecodeString(h)
 	if err != nil {
 		return "", err
 	}
-	return base64.StdEncoding.EncodeToString(bytes), nil
+	return base64.StdEncoding.EncodeToString(b), nil
 }

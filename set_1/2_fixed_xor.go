@@ -2,14 +2,16 @@ package set1
 
 import "encoding/hex"
 
-func FixedXor(s1, s2 string) (string, error) {
-	var b1, b2 []byte
-	var err error
-	b1, err = hex.DecodeString(s1)
+func FixedXor(hex1, hex2 string) (string, error) {
+	var (
+		b1, b2 []byte
+		err    error
+	)
+	b1, err = hex.DecodeString(hex1)
 	if err != nil {
 		return "", err
 	}
-	b2, err = hex.DecodeString(s2)
+	b2, err = hex.DecodeString(hex2)
 	if err != nil {
 		return "", err
 	}

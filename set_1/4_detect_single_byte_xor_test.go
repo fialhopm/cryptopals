@@ -10,11 +10,11 @@ import (
 func TestDetectSingleByteXor(t *testing.T) {
 	path, err := getTestDataPath("1_4.txt")
 	if err != nil {
-		t.Fatalf("while getting test data path: %v", err)
+		t.Fatalf("getTestDataPath: %v", err)
 	}
 	file, err := os.Open(path)
 	if err != nil {
-		t.Fatalf("while opening %s: %v", path, err)
+		t.Fatalf("os.Open: %v", err)
 	}
 	defer file.Close()
 
@@ -27,10 +27,10 @@ func TestDetectSingleByteXor(t *testing.T) {
 	want := "Now that the party is jumping"
 	got, err := DetectSingleByteXor(lines)
 	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+		t.Fatalf("DetectSingleByteXor: %v", err)
 	}
 	if want != got {
-		t.Fatalf("want %s, got %s", want, got)
+		t.Fatalf("want %#v got %#v", want, got)
 	}
 }
 

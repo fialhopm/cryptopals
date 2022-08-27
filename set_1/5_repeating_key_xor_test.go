@@ -12,6 +12,6 @@ func TestRepeatingKeyXor(t *testing.T) {
 	)
 	got := RepeatingKeyXor(ptext, key)
 	if want != got {
-		t.Fatalf("want %s, got %s", want, got)
+		t.Fatalf("want %#v got %#v", want, got)
 	}
 }

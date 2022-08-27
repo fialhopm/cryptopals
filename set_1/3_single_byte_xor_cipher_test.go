@@ -7,9 +7,9 @@ func TestSingleByteXorCipher(t *testing.T) {
 	want := "Cooking MC's like a pound of bacon"
 	got, err := SingleByteXorCipher(cipher)
 	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+		t.Fatalf("SingleByteXorCipher: %v", err)
 	}
 	if want != got {
-		t.Fatalf("want %s, got %s", want, got)
+		t.Fatalf("want %#v got %#v", want, got)
 	}
 }
