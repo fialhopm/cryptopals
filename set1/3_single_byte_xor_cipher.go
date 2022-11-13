@@ -27,16 +27,17 @@ func SingleByteXorCipher(cipher string) (string, error) {
 	return string(plaintext), nil
 }
 
-func byteXor(bytes []byte, key byte) []byte {
-	enc := make([]byte, len(bytes))
-	for i, b := range bytes {
-		enc[i] = b ^ key
+func byteXor(in []byte, key byte) []byte {
+	out := make([]byte, len(in))
+	for i, b := range in {
+		out[i] = b ^ key
 	}
-	return enc
+	return out
 }
 
 func freqScore(bytes []byte) float64 {
-	// https://en.wikipedia.org/wiki/Letter_frequency
+	// https://en.wikipedia.org/wiki/Letter_frequency.
+	// The space is slightly more frequent than the top letter.
 	var freq = map[rune]float64{
 		'a': 8.167, 'b': 1.492, 'c': 2.782,
 		'd': 4.253, 'e': 12.702, 'f': 2.228,
@@ -46,8 +47,7 @@ func freqScore(bytes []byte) float64 {
 		'p': 1.929, 'q': 0.095, 'r': 5.987,
 		's': 6.327, 't': 9.056, 'u': 2.758,
 		'v': 0.978, 'w': 2.360, 'x': 0.150,
-		'y': 1.974, 'z': 0.074,
-		' ': 13, // the space is slightly more frequent than the top letter
+		'y': 1.974, 'z': 0.074, ' ': 13,
 	}
 	var score float64
 	for _, r := range string(bytes) {

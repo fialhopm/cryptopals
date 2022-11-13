@@ -1,4 +1,4 @@
-package set1
+package set1_test
 
 import (
 	"bufio"
@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"testing"
+
+	"github.com/fialhopm/cryptopals/set1"
 )
 
 func TestDetectSingleByteXor(t *testing.T) {
@@ -26,7 +28,7 @@ func TestDetectSingleByteXor(t *testing.T) {
 	}
 
 	want := "Now that the party is jumping"
-	got, err := DetectSingleByteXor(lines)
+	got, err := set1.DetectSingleByteXor(lines)
 	if err != nil {
 		t.Fatalf("DetectSingleByteXor: %v", err)
 	}

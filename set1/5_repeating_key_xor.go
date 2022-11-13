@@ -4,11 +4,12 @@ import (
 	"encoding/hex"
 )
 
-func RepeatingKeyXor(ptext, key string) string {
-	enc := make([]byte, len(ptext))
-	for i := 0; i < len(ptext); i++ {
+func RepeatingKeyXor(plaintext, key string) string {
+	bytes := []byte(plaintext)
+	enc := make([]byte, len(bytes))
+	for i, b := range bytes {
 		k := i % len(key)
-		enc[i] = ptext[i] ^ key[k]
+		enc[i] = b ^ key[k]
 	}
 	return hex.EncodeToString(enc)
 }
