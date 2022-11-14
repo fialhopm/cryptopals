@@ -2,6 +2,7 @@ package set1_test
 
 import (
 	"bufio"
+	"encoding/base64"
 	"os"
 	"strings"
 	"testing"
@@ -25,13 +26,18 @@ func TestDecryptAesEcbMode(t *testing.T) {
 	for scanner.Scan() {
 		sb.WriteString(scanner.Text())
 	}
-	key := "YELLOW SUBMARINE"
-	decrypted, err := set1.DecryptAesEcbMode(sb.String(), key)
+	data, err := base64.StdEncoding.DecodeString(sb.String())
+	if err != nil {
+		t.Fatalf("DecodeString: %v", err)
+	}
+	key := []byte("YELLOW SUBMARINE")
+	decrypted, err := set1.DecryptAesEcbMode(data, key)
 	if err != nil {
 		t.Fatalf("DecryptAesEcbMode: %v", err)
 	}
+
 	want := "I'm back and I'm ringin' the bell"
-	got := decrypted[:len(want)]
+	got := string(decrypted[:len(want)])
 	if want != got {
 		t.Errorf("want %#v got %#v", want, got)
 	}
