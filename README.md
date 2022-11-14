@@ -6,5 +6,5 @@ Solutions to https://cryptopals.com/
 go test ./...
 ```
 
-## TODO:
-[ ] Create testutil package
+## TODO
+* Create testutil package
