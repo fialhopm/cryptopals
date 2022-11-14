@@ -2,13 +2,14 @@ package set1
 
 import (
 	"encoding/hex"
+	"fmt"
 	"unicode"
 )
 
 func SingleByteXorCipher(cipher string) (string, error) {
 	bytes, err := hex.DecodeString(cipher)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("DecodeString: %v", err)
 	}
 	var (
 		key       uint8 = 1

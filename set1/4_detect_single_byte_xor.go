@@ -1,6 +1,9 @@
 package set1
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 func DetectSingleByteXor(lines []string) (string, error) {
 	var (
@@ -10,7 +13,7 @@ func DetectSingleByteXor(lines []string) (string, error) {
 	for _, line := range lines {
 		candidate, err := SingleByteXorCipher(line)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("SingleByteXorCipher: %v", err)
 		}
 		score := freqScore([]byte(candidate))
 		if score > maxScore {

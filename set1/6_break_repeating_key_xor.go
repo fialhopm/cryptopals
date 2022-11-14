@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"math/bits"
 	"strings"
 )
@@ -37,7 +38,7 @@ func (h *keyHeap) Pop() interface{} {
 func BreakRepeatingKeyXor(data string, numCandidateKeySizes int) ([]string, error) {
 	bytes, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("DecodeString: %v", err)
 	}
 
 	// Compute a score for every key size and store it in a min-heap.
@@ -47,7 +48,7 @@ func BreakRepeatingKeyXor(data string, numCandidateKeySizes int) ([]string, erro
 	for size := minKeySize; size <= maxKeySize; size++ {
 		score, err := scoreKeySize(bytes, size)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("scoreKeySize: %v", err)
 		}
 		cand := candidateKey{size: size, score: score}
 		heap.Push(h, cand)
@@ -74,7 +75,7 @@ func BreakRepeatingKeyXor(data string, numCandidateKeySizes int) ([]string, erro
 		for i, block := range blocks {
 			plaintext, err := SingleByteXorCipher(hex.EncodeToString(block))
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("SingleByteXorCipher: %v", err)
 			}
 			plaintexts[i] = plaintext
 		}
@@ -118,7 +119,7 @@ func scoreKeySize(data []byte, size int) (int, error) {
 		for j := i + 1; j < numBlocks; j++ {
 			d, err := HammingDistance(blocks[i], blocks[j])
 			if err != nil {
-				return 0, err
+				return 0, fmt.Errorf("HammingDistance: %v", err)
 			}
 			distances += d
 		}
