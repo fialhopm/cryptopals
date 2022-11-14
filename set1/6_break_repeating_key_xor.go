@@ -35,7 +35,6 @@ func (h *keyHeap) Pop() interface{} {
 }
 
 func BreakRepeatingKeyXor(data string, numCandidateKeySizes int) ([]string, error) {
-	// Base64 to bytes.
 	bytes, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
 		return nil, err
@@ -60,14 +59,14 @@ func BreakRepeatingKeyXor(data string, numCandidateKeySizes int) ([]string, erro
 		candidateKeySizes[i] = heap.Pop(h).(candidateKey).size
 	}
 	candidatePlaintexts := make([]string, 0)
-	for _, size := range candidateKeySizes {
-		// Break the cipher into KEYSIZE length and transpose them.
-		blocks := make([][]byte, size)
-		for i := 0; i < size; i++ {
+	for _, keySize := range candidateKeySizes {
+		// Break the cipher into blocks of length keySize and transpose them.
+		blocks := make([][]byte, keySize)
+		for i := 0; i < keySize; i++ {
 			blocks[i] = make([]byte, 0)
 		}
 		for i, b := range bytes {
-			idx := i % size
+			idx := i % keySize
 			blocks[idx] = append(blocks[idx], b)
 		}
 		// Decrypt each block using single cipher XOR.
@@ -100,7 +99,7 @@ func BreakRepeatingKeyXor(data string, numCandidateKeySizes int) ([]string, erro
 }
 
 // scoreKeySize computes a score for a key size based on the normalized edit
-// distances between the first 10 blocks of input data.
+// distances between the first 10 blocks of encrypted data.
 //
 // This is a variation of the algorithms suggested in
 // https://cryptopals.com/sets/1/challenges/6 that attributes the best score
