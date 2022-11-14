@@ -1,25 +1,14 @@
 package set1
 
-import (
-	"encoding/hex"
-	"fmt"
-)
+import "fmt"
 
-func FixedXor(hex1, hex2 string) (string, error) {
-	var (
-		b1, b2 []byte
-		err    error
-	)
-	b1, err = hex.DecodeString(hex1)
-	if err != nil {
-		return "", fmt.Errorf("DecodeString: %v", err)
+// FixedXor returns the result of XOR-ing every byte of two input buffers.
+func FixedXor(data1, data2 []byte) ([]byte, error) {
+	if len(data1) != len(data2) {
+		return nil, fmt.Errorf("buffers must have equal length")
 	}
-	b2, err = hex.DecodeString(hex2)
-	if err != nil {
-		return "", fmt.Errorf("DecodeString: %v", err)
+	for i := range data1 {
+		data1[i] ^= data2[i]
 	}
-	for i := range b1 {
-		b1[i] ^= b2[i]
-	}
-	return hex.EncodeToString(b1), nil
+	return data1, nil
 }

@@ -1,42 +1,41 @@
 package set1
 
 import (
-	"encoding/hex"
-	"fmt"
 	"unicode"
 )
 
-func SingleByteXorCipher(cipher string) (string, error) {
-	bytes, err := hex.DecodeString(cipher)
-	if err != nil {
-		return "", fmt.Errorf("DecodeString: %v", err)
-	}
+// BreakSingleByteXor decrypts a cipher encrypted with single-byte XOR.
+func BreakSingleByteXor(data []byte) ([]byte, error) {
 	var (
 		key       uint8 = 1
 		maxScore  float64
-		plaintext []byte
+		decrypted []byte
 	)
 	for key > 0 {
-		candidate := byteXor(bytes, key)
+		candidate := keyXor(data, key)
 		score := freqScore(candidate)
 		if score > maxScore {
 			maxScore = score
-			plaintext = candidate
+			decrypted = candidate
 		}
 		key++
 	}
-	return string(plaintext), nil
+	return decrypted, nil
 }
 
-func byteXor(in []byte, key byte) []byte {
-	out := make([]byte, len(in))
-	for i, b := range in {
+// keyXor returns the result of XOR-ing every byte of the input buffer with the
+// key.
+func keyXor(data []byte, key byte) []byte {
+	out := make([]byte, len(data))
+	for i, b := range data {
 		out[i] = b ^ key
 	}
 	return out
 }
 
-func freqScore(bytes []byte) float64 {
+// freqScore computes a score that represents the likelihood of the input buffer
+// being English text.
+func freqScore(data []byte) float64 {
 	// https://en.wikipedia.org/wiki/Letter_frequency.
 	// The space is slightly more frequent than the top letter.
 	var freq = map[rune]float64{
@@ -51,7 +50,7 @@ func freqScore(bytes []byte) float64 {
 		'y': 1.974, 'z': 0.074, ' ': 13,
 	}
 	var score float64
-	for _, r := range string(bytes) {
+	for _, r := range string(data) {
 		if f, ok := freq[unicode.ToLower(r)]; ok {
 			score += f
 		}

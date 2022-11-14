@@ -2,24 +2,25 @@ package set1
 
 import (
 	"fmt"
-	"strings"
 )
 
-func DetectSingleByteXor(lines []string) (string, error) {
+// DetectSingleByteXor returns the input buffer that is most likely to have
+// been encrypted with single-byte XOR.
+func DetectSingleByteXor(data [][]byte) ([]byte, error) {
 	var (
 		maxScore  float64
-		plaintext string
+		decrypted []byte
 	)
-	for _, line := range lines {
-		candidate, err := SingleByteXorCipher(line)
+	for _, buffer := range data {
+		candidate, err := BreakSingleByteXor(buffer)
 		if err != nil {
-			return "", fmt.Errorf("SingleByteXorCipher: %v", err)
+			return nil, fmt.Errorf("BreakSingleByteXor: %v", err)
 		}
 		score := freqScore([]byte(candidate))
 		if score > maxScore {
 			maxScore = score
-			plaintext = candidate
+			decrypted = candidate
 		}
 	}
-	return strings.TrimSpace(plaintext), nil
+	return decrypted, nil
 }

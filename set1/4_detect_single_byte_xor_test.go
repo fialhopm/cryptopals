@@ -2,9 +2,11 @@ package set1_test
 
 import (
 	"bufio"
+	"encoding/hex"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/fialhopm/cryptopals/set1"
@@ -21,19 +23,28 @@ func TestDetectSingleByteXor(t *testing.T) {
 	}
 	defer file.Close()
 
-	var lines []string
+	// Input data is hex-encoded.
+	lines := make([]string, 0)
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
+	data := make([][]byte, len(lines))
+	for i, line := range lines {
+		data[i], err = hex.DecodeString(line)
+		if err != nil {
+			t.Fatalf("DecodeString: %v", err)
+		}
+	}
+	decrypted, err := set1.DetectSingleByteXor(data)
 
 	want := "Now that the party is jumping"
-	got, err := set1.DetectSingleByteXor(lines)
+	got := strings.TrimSpace(string(decrypted))
 	if err != nil {
 		t.Fatalf("DetectSingleByteXor: %v", err)
 	}
 	if want != got {
-		t.Fatalf("want %#v got %#v", want, got)
+		t.Errorf("want %#v got %#v", want, got)
 	}
 }
 

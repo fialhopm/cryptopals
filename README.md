@@ -1,7 +1,10 @@
+# Cryptopals
 Solutions to https://cryptopals.com/
 
-TODO:
-[ ] Add doc comments
+## Testing
+```go
+go test ./...
+```
+
+## TODO:
 [ ] Create testutil package
-[ ] Standardize signatures of exported functions
-[ ] Standardize variables names (e.g. decrypted vs plaintext)

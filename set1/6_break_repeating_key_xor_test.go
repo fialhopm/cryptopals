@@ -2,6 +2,7 @@ package set1_test
 
 import (
 	"bufio"
+	"encoding/base64"
 	"os"
 	"strings"
 	"testing"
@@ -19,22 +20,26 @@ func TestBreakRepeatingKeyXor(t *testing.T) {
 		t.Fatalf("os.Open: %v", err)
 	}
 	defer file.Close()
-
 	var sb strings.Builder
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		sb.WriteString(scanner.Text())
 	}
-	results, err := set1.BreakRepeatingKeyXor(sb.String(), 3)
+	data, err := base64.StdEncoding.DecodeString(sb.String())
+	if err != nil {
+		t.Fatalf("DecodeString: %v", err)
+	}
+	candidates, err := set1.BreakRepeatingKeyXor(data, 3)
 	if err != nil {
 		t.Fatalf("BreakRepeatingKeyXor: %v", err)
 	}
-	// For this sample input, the key size scoring function returns the correct
-	// output as the top result.
-	got := results[0]
+
 	// It's sufficient to assert only on the first line.
 	want := "I'm back and I'm ringin' the bell"
-	if got[:len(want)] != "I'm back and I'm ringin' the bell" {
+	// For this sample input, the key size scoring function returns the correct
+	// output as the top result.
+	got := string(candidates[0][:len(want)])
+	if want != got {
 		t.Errorf("want %#v got %#v", want, got)
 	}
 }

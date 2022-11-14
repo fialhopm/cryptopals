@@ -6,10 +6,11 @@ import (
 	"fmt"
 )
 
-func HexToBase64(h string) (string, error) {
-	b, err := hex.DecodeString(h)
+// HexToBase64 converts a hex string to a base64 encoded string.
+func HexToBase64(data string) (string, error) {
+	bytes, err := hex.DecodeString(data)
 	if err != nil {
 		return "", fmt.Errorf("DecodeString: %v", err)
 	}
-	return base64.StdEncoding.EncodeToString(b), nil
+	return base64.StdEncoding.EncodeToString(bytes), nil
 }

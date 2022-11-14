@@ -1,13 +1,11 @@
 package set1
 
 import (
+	"bytes"
 	"container/heap"
-	"encoding/base64"
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"math/bits"
-	"strings"
 )
 
 type candidateKey struct {
@@ -35,18 +33,18 @@ func (h *keyHeap) Pop() interface{} {
 	return x
 }
 
-func BreakRepeatingKeyXor(data string, numCandidateKeySizes int) ([]string, error) {
-	bytes, err := base64.StdEncoding.DecodeString(data)
-	if err != nil {
-		return nil, fmt.Errorf("DecodeString: %v", err)
-	}
-
+// BreakRepeatingKeyXor decrypts a cipher encrypted with repeating-key XOR.
+//
+// Given that we don't know the key size, it returns the N (numCandidates)
+// buffers that are most likely to be the decrypted plaintext, ordered by
+// decreasing likelihood with respect to the scoring function.
+func BreakRepeatingKeyXor(data []byte, numCandidates int) ([][]byte, error) {
 	// Compute a score for every key size and store it in a min-heap.
 	h := &keyHeap{}
 	heap.Init(h)
 	const minKeySize, maxKeySize = 2, 40
 	for size := minKeySize; size <= maxKeySize; size++ {
-		score, err := scoreKeySize(bytes, size)
+		score, err := scoreKeySize(data, size)
 		if err != nil {
 			return nil, fmt.Errorf("scoreKeySize: %v", err)
 		}
@@ -54,49 +52,53 @@ func BreakRepeatingKeyXor(data string, numCandidateKeySizes int) ([]string, erro
 		heap.Push(h, cand)
 	}
 
-	// Decrypt using the key sizes with the best (lowest) scores.
-	candidateKeySizes := make([]int, numCandidateKeySizes)
-	for i := 0; i < numCandidateKeySizes; i++ {
+	// Get the key sizes with the best (lowest) scores.
+	candidateKeySizes := make([]int, numCandidates)
+	for i := 0; i < numCandidates; i++ {
 		candidateKeySizes[i] = heap.Pop(h).(candidateKey).size
 	}
-	candidatePlaintexts := make([]string, 0)
+
+	// Decrypt the cipher with each candidate key size.
+	candidates := make([][]byte, 0)
 	for _, keySize := range candidateKeySizes {
-		// Break the cipher into blocks of length keySize and transpose them.
+		// Break the cipher into blocks of keySize length and transpose them.
 		blocks := make([][]byte, keySize)
 		for i := 0; i < keySize; i++ {
 			blocks[i] = make([]byte, 0)
 		}
-		for i, b := range bytes {
+		for i, b := range data {
 			idx := i % keySize
 			blocks[idx] = append(blocks[idx], b)
 		}
-		// Decrypt each block using single cipher XOR.
-		plaintexts := make([]string, len(blocks))
+
+		// Decrypt each block using single-byte XOR.
+		decryptedBlocks := make([][]byte, len(blocks))
 		for i, block := range blocks {
-			plaintext, err := SingleByteXorCipher(hex.EncodeToString(block))
+			decrypted, err := BreakSingleByteXor(block)
 			if err != nil {
 				return nil, fmt.Errorf("SingleByteXorCipher: %v", err)
 			}
-			plaintexts[i] = plaintext
+			decryptedBlocks[i] = decrypted
 		}
-		// Combine the plaintexts.
-		var sb strings.Builder
+
+		// Merge the blocks back into a single buffer.
+		var bb bytes.Buffer
 		var i int
 		for {
-			if i >= len(plaintexts[0]) {
+			if i >= len(decryptedBlocks[0]) {
 				break
 			}
-			for x := 0; x < len(plaintexts); x++ {
-				if i < len(plaintexts[x]) {
-					sb.WriteByte(plaintexts[x][i])
+			for _, block := range decryptedBlocks {
+				if i < len(block) {
+					bb.WriteByte(block[i])
 				}
 			}
 			i++
 		}
-		candidatePlaintexts = append(candidatePlaintexts, sb.String())
+		candidates = append(candidates, bb.Bytes())
 	}
 
-	return candidatePlaintexts, nil
+	return candidates, nil
 }
 
 // scoreKeySize computes a score for a key size based on the normalized edit
@@ -104,7 +106,7 @@ func BreakRepeatingKeyXor(data string, numCandidateKeySizes int) ([]string, erro
 //
 // This is a variation of the algorithms suggested in
 // https://cryptopals.com/sets/1/challenges/6 that attributes the best score
-// to the correct key for the sample input.
+// to the key that correctly decrypts the sample cipher (1_6.txt).
 func scoreKeySize(data []byte, size int) (int, error) {
 	const numBlocks = 10
 	blocks := make([][]byte, numBlocks)
@@ -124,11 +126,12 @@ func scoreKeySize(data []byte, size int) (int, error) {
 			distances += d
 		}
 	}
-	avg := distances / 45 // C(10, 2)
-	norm := avg / size
-	return norm, nil
+	average := distances / 45 // C(10, 2)
+	normalized := average / size
+	return normalized, nil
 }
 
+// HammingDistance computes the Hamming distance between two buffers.
 func HammingDistance(b1, b2 []byte) (int, error) {
 	if len(b1) != len(b2) {
 		return 0, errors.New("input strings must have equal length")
