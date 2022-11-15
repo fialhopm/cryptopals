@@ -54,7 +54,7 @@ func ReadAndBase64Decode(filename string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(sb.String())
 }
 
-// getTestDataPath returns the absolute path to the testdata directory.
+// getTestDataPath returns the absolute path of the testdata directory.
 func getTestDataPath(filename string) string {
 	_, path, _, _ := runtime.Caller(0)
 	root := filepath.Join(filepath.Dir(path), "..")
