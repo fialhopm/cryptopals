@@ -16,15 +16,15 @@ func TestFixedXor(t *testing.T) {
 	)
 	bytes1, err = hex.DecodeString(hex1)
 	if err != nil {
-		t.Fatalf("DecodeString: %v", err)
+		t.Fatalf("hex.DecodeString: %v", err)
 	}
 	bytes2, err = hex.DecodeString(hex2)
 	if err != nil {
-		t.Fatalf("DecodeString: %v", err)
+		t.Fatalf("hex.DecodeString: %v", err)
 	}
 	result, err := set1.FixedXor(bytes1, bytes2)
 	if err != nil {
-		t.Fatalf("FixedXor: %v", err)
+		t.Fatalf("set1.FixedXor: %v", err)
 	}
 
 	want := "746865206b696420646f6e277420706c6179"

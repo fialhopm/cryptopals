@@ -5,7 +5,7 @@ import (
 )
 
 // BreakSingleByteXor decrypts a cipher encrypted with single-byte XOR.
-func BreakSingleByteXor(data []byte) ([]byte, error) {
+func BreakSingleByteXor(data []byte) []byte {
 	var (
 		key       uint8 = 1
 		maxScore  float64
@@ -20,7 +20,7 @@ func BreakSingleByteXor(data []byte) ([]byte, error) {
 		}
 		key++
 	}
-	return decrypted, nil
+	return decrypted
 }
 
 // keyXor returns the result of XOR-ing every byte of the input buffer with the

@@ -1,10 +1,8 @@
 # Cryptopals
 Solutions to https://cryptopals.com/
 
-## Testing
-```go
+## Tests
+The solution to each challenge has its own unit test.
+```bash
 go test ./...
 ```
-
-## TODO
-* Create testutil package

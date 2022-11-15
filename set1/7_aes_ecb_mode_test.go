@@ -1,39 +1,21 @@
 package set1_test
 
 import (
-	"bufio"
-	"encoding/base64"
-	"os"
-	"strings"
 	"testing"
 
 	"github.com/fialhopm/cryptopals/set1"
+	"github.com/fialhopm/cryptopals/testutil"
 )
 
 func TestDecryptAesEcbMode(t *testing.T) {
-	path, err := getTestDataPath("1_7.txt")
+	data, err := testutil.ReadAndBase64Decode("1_7.txt")
 	if err != nil {
-		t.Fatalf("getTestDataPath: %v", err)
-	}
-	file, err := os.Open(path)
-	if err != nil {
-		t.Fatalf("os.Open: %v", err)
-	}
-	defer file.Close()
-
-	var sb strings.Builder
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		sb.WriteString(scanner.Text())
-	}
-	data, err := base64.StdEncoding.DecodeString(sb.String())
-	if err != nil {
-		t.Fatalf("DecodeString: %v", err)
+		t.Fatalf("testutil.ReadAndBase64Decode: %v", err)
 	}
 	key := []byte("YELLOW SUBMARINE")
 	decrypted, err := set1.DecryptAesEcbMode(data, key)
 	if err != nil {
-		t.Fatalf("DecryptAesEcbMode: %v", err)
+		t.Fatalf("set1.DecryptAesEcbMode: %v", err)
 	}
 
 	want := "I'm back and I'm ringin' the bell"

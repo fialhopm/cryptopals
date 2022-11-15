@@ -11,7 +11,7 @@ func TestHexToBase64(t *testing.T) {
 	got, err := set1.HexToBase64(data)
 	want := "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
 	if err != nil {
-		t.Fatalf("HexToBase64: %v", err)
+		t.Fatalf("set1.HexToBase64: %v", err)
 	}
 	if want != got {
 		t.Errorf("want %#v got %#v", want, got)

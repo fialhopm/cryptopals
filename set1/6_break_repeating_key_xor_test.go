@@ -1,37 +1,20 @@
 package set1_test
 
 import (
-	"bufio"
-	"encoding/base64"
-	"os"
-	"strings"
 	"testing"
 
 	"github.com/fialhopm/cryptopals/set1"
+	"github.com/fialhopm/cryptopals/testutil"
 )
 
 func TestBreakRepeatingKeyXor(t *testing.T) {
-	path, err := getTestDataPath("1_6.txt")
+	data, err := testutil.ReadAndBase64Decode("1_6.txt")
 	if err != nil {
-		t.Fatalf("getTestDataPath: %v", err)
-	}
-	file, err := os.Open(path)
-	if err != nil {
-		t.Fatalf("os.Open: %v", err)
-	}
-	defer file.Close()
-	var sb strings.Builder
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		sb.WriteString(scanner.Text())
-	}
-	data, err := base64.StdEncoding.DecodeString(sb.String())
-	if err != nil {
-		t.Fatalf("DecodeString: %v", err)
+		t.Fatalf("testutil.ReadAndBase64Decode: %v", err)
 	}
 	candidates, err := set1.BreakRepeatingKeyXor(data, 3)
 	if err != nil {
-		t.Fatalf("BreakRepeatingKeyXor: %v", err)
+		t.Fatalf("set1.BreakRepeatingKeyXor: %v", err)
 	}
 
 	// It's sufficient to assert only on the first line.
@@ -50,7 +33,7 @@ func TestHammingDistance(t *testing.T) {
 	want := 37
 	got, err := set1.HammingDistance(b1, b2)
 	if err != nil {
-		t.Fatalf("hammingDistace: %v", err)
+		t.Fatalf("set1.HammingDistace: %v", err)
 	}
 	if want != got {
 		t.Fatalf("want %#v got %#v", want, got)

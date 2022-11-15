@@ -74,10 +74,7 @@ func BreakRepeatingKeyXor(data []byte, numCandidates int) ([][]byte, error) {
 		// Decrypt each block using single-byte XOR.
 		decryptedBlocks := make([][]byte, len(blocks))
 		for i, block := range blocks {
-			decrypted, err := BreakSingleByteXor(block)
-			if err != nil {
-				return nil, fmt.Errorf("SingleByteXorCipher: %v", err)
-			}
+			decrypted := BreakSingleByteXor(block)
 			decryptedBlocks[i] = decrypted
 		}
 

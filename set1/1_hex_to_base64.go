@@ -10,7 +10,7 @@ import (
 func HexToBase64(data string) (string, error) {
 	bytes, err := hex.DecodeString(data)
 	if err != nil {
-		return "", fmt.Errorf("DecodeString: %v", err)
+		return "", fmt.Errorf("hex.DecodeString: %v", err)
 	}
 	return base64.StdEncoding.EncodeToString(bytes), nil
 }
