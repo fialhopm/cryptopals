@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-// ReadAndHexDecode reads a file containing hex-encoded data.
+// ReadAndHexDecode reads a hex-encoded file and returns the decoded data.
 // Each line is returned as its own buffer.
 func ReadAndHexDecode(filename string) ([][]byte, error) {
 	path := getTestDataPath(filename)
@@ -36,7 +36,7 @@ func ReadAndHexDecode(filename string) ([][]byte, error) {
 	return data, nil
 }
 
-// ReadAndBase64Decode reads a file containing base64-encoded data.
+// ReadAndBase64Decode reads a base64-encoded file and returns the decoded data.
 // The entire content is returned as a single buffer.
 func ReadAndBase64Decode(filename string) ([]byte, error) {
 	path := getTestDataPath(filename)
