@@ -9,7 +9,7 @@ import (
 )
 
 func TestDetectSingleByteXor(t *testing.T) {
-	data, err := testutil.ReadAndHexDecode("1_4.txt")
+	data, err := testutil.ReadAndHexDecode("1_04.txt")
 	if err != nil {
 		t.Fatalf("testutil.ReadAndHexDecode: %v", err)
 	}

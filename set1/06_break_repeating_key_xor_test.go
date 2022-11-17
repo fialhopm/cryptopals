@@ -8,7 +8,7 @@ import (
 )
 
 func TestBreakRepeatingKeyXor(t *testing.T) {
-	data, err := testutil.ReadAndBase64Decode("1_6.txt")
+	data, err := testutil.ReadAndBase64Decode("1_06.txt")
 	if err != nil {
 		t.Fatalf("testutil.ReadAndBase64Decode: %v", err)
 	}

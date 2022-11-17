@@ -8,7 +8,7 @@ import (
 )
 
 func TestDecryptAesEcbMode(t *testing.T) {
-	data, err := testutil.ReadAndBase64Decode("1_7.txt")
+	data, err := testutil.ReadAndBase64Decode("1_07.txt")
 	if err != nil {
 		t.Fatalf("testutil.ReadAndBase64Decode: %v", err)
 	}

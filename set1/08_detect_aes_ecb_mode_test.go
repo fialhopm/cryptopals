@@ -8,7 +8,7 @@ import (
 )
 
 func TestDetectAesEcbMode(t *testing.T) {
-	data, err := testutil.ReadAndHexDecode("1_8.txt")
+	data, err := testutil.ReadAndHexDecode("1_08.txt")
 	if err != nil {
 		t.Fatalf("testutil.ReadAndHexDecode: %v", err)
 	}
