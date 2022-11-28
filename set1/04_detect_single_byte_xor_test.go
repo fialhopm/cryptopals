@@ -18,6 +18,6 @@ func TestDetectSingleByteXor(t *testing.T) {
 	want := "Now that the party is jumping"
 	got := strings.TrimSpace(string(decrypted))
 	if want != got {
-		t.Errorf("want %#v got %#v", want, got)
+		t.Errorf("want %q got %q", want, got)
 	}
 }

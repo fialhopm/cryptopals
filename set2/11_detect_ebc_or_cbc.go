@@ -18,31 +18,30 @@ const (
 	Cbc
 )
 
+// EncryptAndDetectEbcOrCbc encrypts a buffer with either ECB or CBC mode
+// (randomly picked) and then detects which encryption mode was used.
 func EncryptAndDetectEbcOrCbc(data []byte) (Mode, error) {
 	encrypted, err := EncryptEbcOrCbc(data)
 	if err != nil {
 		return 0, fmt.Errorf("EncryptEbcOrCbc: %v", err)
 	}
 
-	ciphers := make([][]byte, 1)
-	ciphers[0] = encrypted
-	result, err := set1.DetectAesEcbMode(ciphers)
-	if err != nil {
-		return 0, fmt.Errorf("set1.DetectAesEcbMode: %v", err)
-	}
-	if len(result) == 1 {
+	const blockSize = 16
+	if set1.DetectAesEcbMode(encrypted, blockSize) {
 		return Ecb, nil
-	} else {
-		return Cbc, nil
 	}
+	return Cbc, nil
 }
 
+// EncryptEbcOrCbc pads the beginning and end of the data with random buffers
+// of random length, and then encrypts the result using either ECB or
+// CBC mode (also randomly picked).
 func EncryptEbcOrCbc(data []byte) ([]byte, error) {
 	// Generate random key.
 	const keySize = 16
 	key, err := GenerateRandBuffer(keySize)
 	if err != nil {
-		return nil, fmt.Errorf("generateRandBuffer: %v", err)
+		return nil, fmt.Errorf("GenerateRandBuffer: %v", err)
 	}
 
 	// Generate 5-10 random bytes to pad the beginning of the plaintext.
@@ -53,7 +52,7 @@ func EncryptEbcOrCbc(data []byte) ([]byte, error) {
 	}
 	paddingLeft, err := GenerateRandBuffer(minPadding + n)
 	if err != nil {
-		return nil, fmt.Errorf("generateRandBuffer: %v", err)
+		return nil, fmt.Errorf("GenerateRandBuffer: %v", err)
 	}
 
 	// Generate 5-10 random bytes to pad the end of the plaintext.
@@ -63,7 +62,7 @@ func EncryptEbcOrCbc(data []byte) ([]byte, error) {
 	}
 	paddingRight, err := GenerateRandBuffer(minPadding + n)
 	if err != nil {
-		return nil, fmt.Errorf("generateRandBuffer: %v", err)
+		return nil, fmt.Errorf("GenerateRandBuffer: %v", err)
 	}
 
 	// Pad plaintext.
@@ -80,16 +79,14 @@ func EncryptEbcOrCbc(data []byte) ([]byte, error) {
 	}
 	var encrypted []byte
 	if n == int(Ecb) {
-		fmt.Println("ECB")
 		encrypted, err = encryptEcb(newData, key)
 		if err != nil {
 			return nil, fmt.Errorf("encryptEcb: %v", err)
 		}
 	} else {
-		fmt.Println("CBC")
 		iv, err := GenerateRandBuffer(blockSize)
 		if err != nil {
-			return nil, fmt.Errorf("generateRandBuffer: %v", err)
+			return nil, fmt.Errorf("GenerateRandBuffer: %v", err)
 		}
 		encrypted, err = encryptCbc(newData, key, iv)
 		if err != nil {
@@ -99,6 +96,7 @@ func EncryptEbcOrCbc(data []byte) ([]byte, error) {
 	return encrypted, nil
 }
 
+// GenerateRandBuffer generates a random buffer.
 func GenerateRandBuffer(size int) ([]byte, error) {
 	buffer := make([]byte, size)
 	_, err := rand.Read(buffer)
@@ -108,6 +106,7 @@ func GenerateRandBuffer(size int) ([]byte, error) {
 	return buffer, nil
 }
 
+// generateRandInt generates a random integer.
 func generateRandInt(max int) (int, error) {
 	n, err := rand.Int(rand.Reader, big.NewInt(int64(max+1)))
 	if err != nil {
@@ -116,6 +115,7 @@ func generateRandInt(max int) (int, error) {
 	return int(n.Int64()), nil
 }
 
+// encryptEcb encrypts data using ECB mode.
 func encryptEcb(data, key []byte) ([]byte, error) {
 	cipher, err := aes.NewCipher(key)
 	if err != nil {
@@ -130,6 +130,7 @@ func encryptEcb(data, key []byte) ([]byte, error) {
 	return encrypted, nil
 }
 
+// encryptCbc encrypts data using CBC mode.
 func encryptCbc(data, key, iv []byte) ([]byte, error) {
 	cipher, err := aes.NewCipher(key)
 	if err != nil {

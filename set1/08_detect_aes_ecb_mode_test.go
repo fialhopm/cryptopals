@@ -8,20 +8,23 @@ import (
 )
 
 func TestDetectAesEcbMode(t *testing.T) {
-	data, err := testutil.ReadAndHexDecode("1_08.txt")
+	buffers, err := testutil.ReadAndHexDecode("1_08.txt")
 	if err != nil {
 		t.Fatalf("testutil.ReadAndHexDecode: %v", err)
 	}
-	candidates, err := set1.DetectAesEcbMode(data)
-	if err != nil {
-		t.Fatalf("set1.DetectAesEcbMode: %v", err)
+	const blockSize = 16
+	results := make([]int, 0)
+	for i, buffer := range buffers {
+		if set1.DetectAesEcbMode(buffer, blockSize) {
+			results = append(results, i)
+		}
 	}
-	if len(candidates) != 1 {
-		t.Errorf("want 1 candidate, got %d", len(candidates))
+	if len(results) != 1 {
+		t.Errorf("want 1 result, got %d", len(results))
 	}
 	want := 132
-	got := candidates[0]
+	got := results[0]
 	if want != got {
-		t.Errorf("want %#v got %#v", want, got)
+		t.Errorf("want %q got %q", want, got)
 	}
 }

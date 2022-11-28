@@ -25,6 +25,6 @@ func TestDecryptCbcMode(t *testing.T) {
 	want := "I'm back and I'm ringin' the bell"
 	got := string(decrypted[:len(want)])
 	if want != got {
-		t.Errorf("want %#v got %#v", want, got)
+		t.Errorf("want %q got %q", want, got)
 	}
 }

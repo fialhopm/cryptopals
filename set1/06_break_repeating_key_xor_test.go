@@ -23,7 +23,7 @@ func TestBreakRepeatingKeyXor(t *testing.T) {
 	// output as the top result.
 	got := string(candidates[0][:len(want)])
 	if want != got {
-		t.Errorf("want %#v got %#v", want, got)
+		t.Errorf("want %q got %q", want, got)
 	}
 }
 
@@ -36,6 +36,6 @@ func TestHammingDistance(t *testing.T) {
 		t.Fatalf("set1.HammingDistace: %v", err)
 	}
 	if want != got {
-		t.Fatalf("want %#v got %#v", want, got)
+		t.Fatalf("want %d got %d", want, got)
 	}
 }

@@ -10,7 +10,7 @@ import (
 // DecryptCbcMode decrypts a cipher encrypted with AES-128 in CBC mode.
 //
 // The cipher-block chaining (CBC) mode is more secure than EBC because each
-// input to the ciphe core is randomized, hiding patterns in the plaintext.
+// input to the cipher core is randomized, hiding patterns in the plaintext.
 // Nice write-up: https://crypto.stackexchange.com/questions/1129/can-cbc-ciphertext-be-decrypted-if-the-key-is-known-but-the-iv-not
 func DecryptCbcMode(data, key, iv []byte) ([]byte, error) {
 	cipher, err := aes.NewCipher(key)

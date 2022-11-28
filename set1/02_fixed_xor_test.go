@@ -30,6 +30,6 @@ func TestFixedXor(t *testing.T) {
 	want := "746865206b696420646f6e277420706c6179"
 	got := hex.EncodeToString(result)
 	if want != got {
-		t.Errorf("want %#v got %#v", want, got)
+		t.Errorf("want %q got %q", want, got)
 	}
 }

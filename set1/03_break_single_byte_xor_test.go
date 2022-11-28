@@ -18,6 +18,6 @@ func TestBreakSingleByteXor(t *testing.T) {
 	want := "Cooking MC's like a pound of bacon"
 	got := string(decrypted)
 	if want != got {
-		t.Errorf("want %#v got %#v", want, got)
+		t.Errorf("want %q got %q", want, got)
 	}
 }

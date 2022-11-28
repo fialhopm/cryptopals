@@ -14,6 +14,6 @@ func TestPkcs7Padding(t *testing.T) {
 	want := "YELLOW SUBMARINE\x04\x04\x04\x04"
 	got := string(padded)
 	if want != string(got) {
-		t.Fatalf("want %#v got %#v", want, got)
+		t.Fatalf("want %q got %q", want, got)
 	}
 }
