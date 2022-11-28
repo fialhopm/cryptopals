@@ -10,7 +10,7 @@ import (
 type Oracle struct {
 	// unknown is a buffer that is appended to the data before encryption.
 	unknown []byte
-	// key is encryption key.
+	// key is the encryption key.
 	key []byte
 }
 
@@ -131,7 +131,7 @@ func decryptNextByte(oracle *Oracle, byteIdx int, known []byte, blockSize int) (
 	// digit, or special character. TODO: update me
 	const (
 		asciiStart = 0
-		asciiEnd   = 2000
+		asciiEnd   = 127
 	)
 	// Compute and store all possible ciphertexts.
 	block := make([]byte, blockSize)
