@@ -7,6 +7,8 @@ import (
 	"github.com/fialhopm/cryptopals/util"
 )
 
+const null = byte(0)
+
 type Oracle struct {
 	// unknown is a buffer that is appended to the data before encryption.
 	unknown []byte
@@ -25,8 +27,8 @@ func (o *Oracle) Encrypt(data []byte) ([]byte, error) {
 	return encryptEcb(data, o.key)
 }
 
-// TODO: add doc comment.
-func DecryptEcbByteSimple(oracle *Oracle) ([]byte, error) {
+// DecryptEcbByteByByte decrypts the input oracle's unknown buffer.
+func DecryptEcbByteByByte(oracle *Oracle) ([]byte, error) {
 	// Detect block size.
 	blocksize, err := detectBlockSize(oracle)
 	if err != nil {
@@ -106,7 +108,10 @@ func isEcb(oracle *Oracle, blockSize int) (bool, error) {
 	return util.IsEqual(first, second), nil
 }
 
-// TODO: add doc comment.
+// decryptUnknown decrypts the input oracle's unknown buffer.
+//
+// It decrypts one byte at a time by repeatedly calling the oracle's encryption
+// method.
 func decryptUnknown(oracle *Oracle, blockSize int) ([]byte, error) {
 	byteIdx := 0
 	known := make([]byte, 0)
@@ -115,25 +120,26 @@ func decryptUnknown(oracle *Oracle, blockSize int) ([]byte, error) {
 		if err != nil {
 			return nil, fmt.Errorf("decryptNextByte: %v", err)
 		}
-		if nextByte == byte(3) {
+		// Null byte indicates that there are no more bytes to decrypt.
+		if nextByte == null {
 			break
 		}
 		known = append(known, nextByte)
 		byteIdx++
 	}
-
 	return known, nil
 }
 
-// TODO: clean up and add doc comment.
+// decryptNextByte decrypts the next byte of the input oracle's unknown buffer.
 func decryptNextByte(oracle *Oracle, byteIdx int, known []byte, blockSize int) (byte, error) {
-	// Assume that each byte of Oracle.unknown is either an Engligh letter,
-	// digit, or special character. TODO: update me
+	// Assume that all bytes are contained in the ASCII table.
 	const (
 		asciiStart = 0
 		asciiEnd   = 127
 	)
-	// Compute and store all possible ciphertexts.
+	// Create a buffer with the last blockSize-1 bytes that have been
+	// decrypted. If the total number of decrypted bytes is less than
+	// blockSize-1, use 'A' as padding.
 	block := make([]byte, blockSize)
 	blockIdx := blockSize - 2
 	knownIdx := len(known) - 1
@@ -147,6 +153,10 @@ func decryptNextByte(oracle *Oracle, byteIdx int, known []byte, blockSize int) (
 		block[blockIdx] = 'A'
 		blockIdx++
 	}
+
+	// Compute all possible ciphertexts by encrypting the concatenation of the
+	// last blockSize-1 known bytes with each byte in the ASCII table. Store
+	// each mapping of ciphertext to byte.
 	memo := make(map[string]byte, asciiEnd-asciiStart)
 	for i := asciiStart; i < asciiEnd; i++ {
 		candidate := byte(i)
@@ -157,22 +167,26 @@ func decryptNextByte(oracle *Oracle, byteIdx int, known []byte, blockSize int) (
 		}
 		memo[string(encrypted[:blockSize])] = candidate
 	}
-	// Remove last byte from block and encrypt.
+
+	// Resize the block to the known set of bytes that we want to encrypt
+	// such that
 	block = block[:blockSize-1-(byteIdx%blockSize)]
 	encrypted, err := oracle.Encrypt(block)
 	if err != nil {
 		return 0, fmt.Errorf("oracle.Encrypt: %v", err)
 	}
-	// Lookup ciphertext to find next unknown byte.
+	// Find the encrypted block that we're interested in.
 	blockNum := int(math.Floor(float64(byteIdx) / float64(blockSize)))
 	encBlock := encrypted[blockSize*blockNum : blockSize*(blockNum+1)]
+	// An empty buffer indicates that there are no more bytes to decrypt.
 	nullBlock := make([]byte, blockSize)
 	if util.IsEqual(encBlock, nullBlock) {
-		return byte(3), nil
+		return null, nil
 	}
+	// Lookup ciphertext to find the next byte of unknown.
 	nextByte, ok := memo[string(encBlock)]
 	if !ok {
-		return 0, fmt.Errorf("unknown contains bytes lower than %d or higher than %d", asciiStart, asciiEnd)
+		return 0, fmt.Errorf("unknown contains bytes that are not in the ASCII table")
 	}
 	return nextByte, nil
 }

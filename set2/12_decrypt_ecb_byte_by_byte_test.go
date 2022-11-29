@@ -8,7 +8,7 @@ import (
 	"github.com/fialhopm/cryptopals/testutil"
 )
 
-func TestDecryptEcbByteSimple(t *testing.T) {
+func TestDecryptEcbByteByByte(t *testing.T) {
 	// Read and base64-decode unknown string.
 	unknown, err := testutil.ReadAndBase64Decode("2_12.txt")
 	if err != nil {
@@ -22,14 +22,14 @@ func TestDecryptEcbByteSimple(t *testing.T) {
 		t.Fatalf("GenerateRandBuffer: %v", err)
 	}
 
-	// Decrypt unknown.
+	// Initialize the oracle and decrypt its unknown buffer.
 	oracle := set2.NewOracle(unknown, key)
-	decrypted, err := set2.DecryptEcbByteSimple(oracle)
+	decrypted, err := set2.DecryptEcbByteByByte(oracle)
 	if err != nil {
-		t.Fatalf("set2.DecryptEcbByteSimple: %v", err)
+		t.Fatalf("set2.DecryptEcbByteByByte: %v", err)
 	}
 
-	// TODO: why am I not getting the last newline?
+	// TODO: make assertion work without removing trailing newline.
 	want := strings.TrimSpace(string(unknown))
 	got := strings.TrimSpace(string(decrypted))
 	if want != got {
